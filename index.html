@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+        function validar() {
+
+            const MAYORIA_EDAD = 18;
+            let edad = document.getElementById("edad").value;
+            const resultado = document.getElementById("resultado");
+
+            if (isNaN(edad))
+                resultado.innerHTML = "Introduce un numero";
+            else
+                //Usamos operador ternario para decidir si es mayor o menor
+                edad < MAYORIA_EDAD ? resultado.innerHTML = "Eres menor de edad" : resultado.innerHTML = "Eres mayor de edad";
+
+        }
+    </script>
+</head>
+<body>
+    <label for="">Intruduce tu edad: </label>
+    <input type="text" id="edad">
+    <button onclick="validar()">Comprobar</button>
+    <h1 id="resultado"></h1>
+</body>
+</html>
