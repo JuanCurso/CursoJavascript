@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+        function calcular() {
+
+            const LETRA = ["T", "R", "W","A", "G", "M", "Y", "F", "P", "D", "X", "B",
+                            "N", "J", "Z", "S", "Q", "V", "H", "L", "C", "K", "E"];
+            const NUM_LETRAS = 23;
+
+            let doc = document.getElementById("doc").value;
+            const resultado = document.getElementById("resultado");
+
+            let error = false;
+
+            if (doc.length != 8) error = true;
+            
+            if (!error) {
+
+                let primerElem = doc.substring(0,1).toUpperCase();
+                
+                switch (true) {
+                    case primerElem == "X":
+                        doc = "0" + doc.substring(1,doc.length);
+                        break;
+
+                    case primerElem == "Y":
+                        doc = "1" + doc.substring(1,doc.length);
+                        break;
+
+                    case primerElem == "Z":
+                        doc = "2" + doc.substring(1,doc.length);
+                        break;
+
+                    case primerElem >= "0" && primerElem <= "9":
+                        break;
+                    default:
+                        error = true;
+                }
+
+            }
+
+            if (isNaN(doc)) error = true
+                
+            if (error) resultado.innerHTML = "Introduce un documento válido";
+            else
+                //Usamos operador ternario para decidir si es mayor o menor
+                resultado.innerHTML = "Tu letra del documento es: " + LETRA[doc % NUM_LETRAS];
+
+        }
+    </script>
+</head>
+<body>
+    <label for="">Introduce el documento: </label>
+    <input type="text" id="doc">
+    <button onclick="calcular()">Calcular letra</button>
+    <h1 id="resultado"></h1>
+</body>
+</html>
