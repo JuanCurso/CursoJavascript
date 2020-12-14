@@ -1,25 +1,23 @@
 
-let numIntentos = 5;
+const INTENTOS = 5;
+let numIntentos = INTENTOS;
 let numAdivinar;
+
+let tiradas = [];
 
 /*MANEJO DEL HISTORICO
     [
         {
+            IDPartida : number
             nombre : string
-            partidas : [
-                {
-                    id : number
-                    resultado : string //acierto fallo
-                    njugadas : number //numero de jugadas en las que ha acertado
-                }
-            ]
+            resultado : string //ganado perdido
         }
     ]
 */
 let miNombre;
-let indexJugador;
+let IDPartida;
 let historico = [];
-let jugador = {};
+let jugadaJSON = {};
 
 function comienza() {
 
@@ -37,30 +35,59 @@ function comienza() {
 
         cargarHistorico();
 
-        buscarJugador();
-    } 
+    }
+
+
 
     console.log(numAdivinar);
 }
 
 function cargarHistorico() {
-    // cargamos el historico y obtenemos un array con los json
-    let stringHistorico = localStorage.getItem("historico");
+    // cargamos el historico
+    let historicoTEMP = localStorage.getItem("historico");
 
-    if (stringHistorico)
-        historico = localStorage.getItem("historico").split(",");
+    //Comprobamos si existe
+    if (historicoTEMP) {
+/*         let historicoTEMP = localStorage.getItem("historico").split(",");
+
+        let i = 0;
+
+        while (i < historicoTEMP.length) {
+            let cad = historicoTEMP[i] + ",";
+            
+            i++;
+            cad = cad + historicoTEMP[i] + ",";
+
+            i++;
+            cad= cad + historicoTEMP[i];
+
+            historico.push(cad);
+
+            i++;
+        } */
+
+        console.log(historicoTEMP);
+        historico = historicoTEMP.split(",");
+
+        IDPartida = historico.length;
+
+        
+/*         historico.forEach( i => {
+            console.log(JSON.stringify(i));
+        }
+        ); */
+
+        console.log(JSON.stringify(historico[0]));
+
+    } else {
+        IDPartida = 0;
+    }
+
+
+    console.log(IDPartida);
 }
 
-function buscarJugador() {
 
-    //recorremos array y buscamos el jugador
-    let i = 0;
-    let encontrado = false;
-    while (i < historico.length && !encontrado) {
-        //TODO: buscar al jugador
-    }
-    
-} 
 function enviar() {
     if (numIntentos == 0) {
         alert("Recarga la página para comenzar a jugar!!!!!!!")
@@ -71,6 +98,7 @@ function enviar() {
 
 function compruebaNum() {
     const cajaNum = document.getElementById("numero").value;
+    tiradas.push(parseInt(cajaNum));
 
     switch(true) {
         case cajaNum == numAdivinar:
@@ -83,29 +111,37 @@ function compruebaNum() {
             mostrarResult("mayor");
             break;           
     }
+
+    document.getElementById("numero").value = "";
+
 }
 
 function mostrarResult(accion) {
     const resultado = document.getElementById("result");
     const imagen = document.getElementById("imagen");
+    
 
+    document.getElementById("tiradas").innerHTML = tiradas.sort(function(a, b){return a - b}).toString();
     numIntentos--;
     actuIntentos();
 
     if (accion == "acertado") {
-        resultado.innerHTML = `HAS ACERTADO EN ${5-numIntentos} INTENTOS`;
+        resultado.innerHTML = `HAS ACERTADO EN ${INTENTOS-numIntentos} INTENTOS`;
         imagen.setAttribute("src", "img/confetti.gif")
         document.getElementById("reset").style.visibility = "visible";
 
         numIntentos = 0;
 
-        actualizarHistorico();
+        actualizarHistorico("ganado");
 
     } else {
         if (numIntentos == 0) {
             resultado.innerHTML = "Has fallado";
             imagen.setAttribute("src", "img/fracaso.gif")
             document.getElementById("reset").style.visibility = "visible";
+
+            actualizarHistorico("perdido");
+
         } else {
         resultado.innerHTML = "El numero que tienes que adivinar es " + accion;
 
@@ -124,20 +160,27 @@ function cambiarJugador() {
     location.href = "./intro_nombre.html";
 }
 
-function actualizarHistorico(id, resultado, jugadas = 0) {
+function actualizarHistorico(resultado) {
     let partidaJSON = {
-        "id" : id,
-        "resultado" : resultado,
-        "jugadas" : jugadas
+        IDPartida : IDPartida,
+        nombre : miNombre,
+        resultado : resultado
     }
 
-    jugador.partida.push(partidaJSON);
+    console.log(partidaJSON);
+    console.log(JSON.stringify(partidaJSON));
+    historico.push(partidaJSON);
 
-    guardarHistorico(jugador);
+    historico.forEach( i => {
+        console.log("Muestra el contenido del historico: " + JSON.stringify(i));
+    }
+    );
+            
+    IDPartida++;
+    guardarHistorico();
 }
 
-function guardarHistorico(jugador) {
-    historico[indexJugador] = jugador;
+function guardarHistorico() {
 
     localStorage.setItem("historico", historico);
 }
