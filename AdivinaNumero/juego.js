@@ -17,13 +17,14 @@ let tiradas = [];
 let miNombre;
 let IDPartida;
 let historico = [];
-let jugadaJSON = {};
+
 
 function comienza() {
 
     actuIntentos();
 
     document.getElementById("reset").style.visibility = "hidden";
+    document.getElementById("puntua").style.visibility = "hidden";
 
     numAdivinar = parseInt((Math.random()*100)+1);
 
@@ -44,41 +45,11 @@ function comienza() {
 
 function cargarHistorico() {
     // cargamos el historico
-    let historicoTEMP = localStorage.getItem("historico");
 
-    //Comprobamos si existe
-    if (historicoTEMP) {
-/*         let historicoTEMP = localStorage.getItem("historico").split(",");
+    historico = Partida.cargarPartidas();
 
-        let i = 0;
-
-        while (i < historicoTEMP.length) {
-            let cad = historicoTEMP[i] + ",";
-            
-            i++;
-            cad = cad + historicoTEMP[i] + ",";
-
-            i++;
-            cad= cad + historicoTEMP[i];
-
-            historico.push(cad);
-
-            i++;
-        } */
-
-        console.log(historicoTEMP);
-        historico = historicoTEMP.split(",");
-
+    if (historico) {
         IDPartida = historico.length;
-
-        
-/*         historico.forEach( i => {
-            console.log(JSON.stringify(i));
-        }
-        ); */
-
-        console.log(JSON.stringify(historico[0]));
-
     } else {
         IDPartida = 0;
     }
@@ -129,18 +100,21 @@ function mostrarResult(accion) {
         resultado.innerHTML = `HAS ACERTADO EN ${INTENTOS-numIntentos} INTENTOS`;
         imagen.setAttribute("src", "img/confetti.gif")
         document.getElementById("reset").style.visibility = "visible";
+        document.getElementById("puntua").style.visibility = "visible";
+
+        actualizarHistorico(INTENTOS-numIntentos);
 
         numIntentos = 0;
 
-        actualizarHistorico("ganado");
 
     } else {
         if (numIntentos == 0) {
             resultado.innerHTML = "Has fallado";
             imagen.setAttribute("src", "img/fracaso.gif")
             document.getElementById("reset").style.visibility = "visible";
+            document.getElementById("puntua").style.visibility = "visible";
 
-            actualizarHistorico("perdido");
+            actualizarHistorico(INTENTOS-numIntentos);
 
         } else {
         resultado.innerHTML = "El numero que tienes que adivinar es " + accion;
@@ -160,29 +134,18 @@ function cambiarJugador() {
     location.href = "./intro_nombre.html";
 }
 
-function actualizarHistorico(resultado) {
-    let partidaJSON = {
-        IDPartida : IDPartida,
-        nombre : miNombre,
-        resultado : resultado
-    }
+function actualizarHistorico(intentos) {
+    let miPartida = new Partida(IDPartida, miNombre, intentos);
 
-    console.log(partidaJSON);
-    console.log(JSON.stringify(partidaJSON));
-    historico.push(partidaJSON);
+    miPartida.mostrarPartida();
 
-    historico.forEach( i => {
-        console.log("Muestra el contenido del historico: " + JSON.stringify(i));
-    }
-    );
+    historico.push(miPartida);
+
             
     IDPartida++;
-    guardarHistorico();
+
+    Partida.guardarPartidas(historico);
 }
 
-function guardarHistorico() {
-
-    localStorage.setItem("historico", historico);
-}
 
 window.addEventListener("load", comienza, false);
